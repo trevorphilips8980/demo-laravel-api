@@ -11,5 +11,5 @@ Route::post('register', [AuthController::class, 'register']);
 Route::group(['middleware' => 'auth'], function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('profile-update', [UserController::class, 'profileUpdate']);
-    Route::post('get-location', [UserController::class, 'getLocation']);
+    Route::post('me', [UserController::class, 'me']);
 });

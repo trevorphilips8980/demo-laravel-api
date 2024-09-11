@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\JsonService;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Location\Facades\Location;
@@ -94,16 +95,16 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/get-location",
-     *     summary="get location",
+     *     path="/api/me",
+     *     summary="me",
      *     tags={"User"},
-     *     description="Get user location",
+     *     description="Get user details",
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="User's location fetch successfully",
+     *         description="User fetch successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="User location fetched!")
+     *             @OA\Property(property="message", type="string", example="User details fetched!")
      *         )
      *     ),
      *     @OA\Response(
@@ -115,23 +116,19 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function getLocation(Request $request)
+    public function me()
     {
         try {
-            $location = Location::get($request->ip());
-            $latitude = $location->latitude;
-            $longitude = $location->longitude;
+            if (!Auth::guard('api')->check()) {
+                return $this->jsonService->sendResponse(false, [], __('Please login first!'), 401);
+            }
+            $user = Auth::guard('api')->user();
+            $showData = ['id', 'name', 'email', 'role_name'];
+            $response = collect(new UserResource($user))->only($showData);
 
-            \Log::info('latitude: ' . $latitude . ' longitude: ' . $longitude);
-            // $user = Auth::guard('api')->user();
-            // $showData = ['first_name', 'last_name', 'full_name', 'email', 'phone_number', 'status'];
-            // $userData = collect(new UserResource($user))->only($showData);
-            // $response = [
-            //     'user' => $userData,
-            // ];
-
-            return $this->jsonService->sendResponse(true, $response, __('User location fetched!'), 200);
+            return $this->jsonService->sendResponse(true, $response, __('User details fetched!'), 200);
         } catch (\Exception $e) {
+            \Log::error($e->getMessage());
             return $this->jsonService->sendResponse(false, [], __('Whoops! Something went wrong.'), 500);
         }
     }

@@ -294,24 +294,24 @@
                 ]
             }
         },
-        "/api/get-location": {
+        "/api/me": {
             "post": {
                 "tags": [
                     "User"
                 ],
-                "summary": "get location",
-                "description": "Get user location",
-                "operationId": "7e6aa87fa673f7179066163b49649c3c",
+                "summary": "me",
+                "description": "Get user details",
+                "operationId": "e82258e9d6af4a7b3e78afe18568d268",
                 "responses": {
                     "200": {
-                        "description": "User's location fetch successfully",
+                        "description": "User fetch successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User location fetched!"
+                                            "example": "User details fetched!"
                                         }
                                     },
                                     "type": "object"
